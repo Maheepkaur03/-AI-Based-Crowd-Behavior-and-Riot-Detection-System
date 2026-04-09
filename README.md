@@ -13,12 +13,12 @@ Sightline is a high-fidelity AI surveillance dashboard designed for mission-crit
 
 ## 🚀 Key Features
 
-- **🎮 Tactical HUD**: A premium, glassmorphic dashboard built with Next.js and Framer Motion, optimized for expansive 4K situational awareness.
-- **📍 Spatial Awareness Radar**: Real-time 2D projection of all tracked individuals, highlighting anomalies and security breaches instantly.
-- **⚡ Parallel Async Architecture**: A decoupled backend pipeline that processes video, detects people, and extracts behavior features in separate threads to maintain 30+ UI FPS.
-- **🔫 Advanced Weapon Intelligence**: High-frequency weapon scanning (tuned for Interval 2) with temporal smoothing to eliminate false positives while ensuring instant reaction.
-- **🛡️ Forensic Auditing**: Encrypted alert snapshots with full technical metadata (IDs, scores, and trajectories) for post-incident security reviews.
-- **🔋 Resource Watchdog**: Intelligent auto-pause system that releases hardware resources when no active viewers are connected.
+- **Tactical HUD**: A premium, glassmorphic dashboard built with Next.js and Framer Motion, optimized for expansive 4K situational awareness.
+- **Spatial Awareness Radar**: Real-time 2D projection of all tracked individuals, highlighting anomalies and security breaches instantly.
+- **Parallel Async Architecture**: A decoupled backend pipeline that processes video, detects people, and extracts behavior features in separate threads to maintain 30+ UI FPS.
+- **Advanced Weapon Intelligence**: High-frequency weapon scanning (tuned for Interval 2) with temporal smoothing to eliminate false positives while ensuring instant reaction.
+- **Forensic Auditing**: Encrypted alert snapshots with full technical metadata (IDs, scores, and trajectories) for post-incident security reviews.
+- **Resource Watchdog**: Intelligent auto-pause system that releases hardware resources when no active viewers are connected.
 
 ## 🏗️ System Architecture
 
