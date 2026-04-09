@@ -38,8 +38,7 @@ if not logger.handlers:
 # =========================
 # ALERT STATE
 # =========================
-last_alert_time = 0
-last_alert_type = None
+alert_timestamps = {}
 
 
 # =========================
@@ -114,7 +113,7 @@ def send_email_alert(alert_type, score, timestamp):
             msg["To"] = ", ".join(settings.ALERT_EMAIL_RECIPIENT) if isinstance(settings.ALERT_EMAIL_RECIPIENT, list) else settings.ALERT_EMAIL_RECIPIENT
 
             body = (
-                f"🚨 {alert_type} DETECTED 🚨\n\n"
+                f"🚨 {alert_type}  🚨\n\n"
                 f"Time: {timestamp}\n"
                 f"Camera: {shared_state.active_source}\n\n"
                 f"SECURITY METRICS:\n"
@@ -166,24 +165,22 @@ def send_email_alert(alert_type, score, timestamp):
 # =========================
 def trigger_alert(alert_type, score=None):
 
-    global last_alert_time, last_alert_type
+    global alert_timestamps
 
     now = time.time()
 
     # =========================
-    # COOLDOWN PROTECTION
+    # PER-ALERT COOLDOWN
     # =========================
-    if now - last_alert_time < settings.ALERT_COOLDOWN:
+    last_time = alert_timestamps.get(alert_type, 0.0)
+    cooldown = settings.ALERT_COOLDOWN
+
+    # Critical alerts like Weapon/Riot should have specialized handling, 
+    # but a per-type cooldown prevents one from overriding another.
+    if now - last_time < cooldown:
         return
 
-    # =========================
-    # DUPLICATE ALERT PROTECTION
-    # =========================
-    if alert_type == last_alert_type and now - last_alert_time < 10:
-        return
-
-    last_alert_time = now
-    last_alert_type = alert_type
+    alert_timestamps[alert_type] = now
 
     message = f"ALERT: {alert_type}"
 

@@ -32,8 +32,15 @@ const MetricCard = ({ title, value, unit, icon: Icon, trend }: any) => (
 );
 
 const ThreatMetrics = ({ systemStatus, riskScore, escalationTrend, peopleCount, gruScore, weaponDetected }: ThreatMetricsProps) => {
-  const isCritical = riskScore > 0.8 || weaponDetected;
-  
+  const isRiot = riskScore >= 0.50 && !weaponDetected; // config.RIOT_THRESHOLD = 0.50
+  const isEarlyWarning = riskScore >= 0.40 && escalationTrend >= 0.04 && !weaponDetected && !isRiot; // config.EARLY_WARNING_THRESHOLD AND config.ESCALATION_THRESHOLD
+  const isCritical = riskScore >= 0.50 || weaponDetected || isRiot;
+
+  let alertMessage = "DEFENSE_PROTOCOL: SECURE";
+  if (weaponDetected) alertMessage = "TACTICAL ALERT: WEAPON_DETECTED";
+  else if (isRiot) alertMessage = "CRITICAL ALERT: RIOT DETECTED";
+  else if (isEarlyWarning) alertMessage = "ELEVATED ALERT: EARLY WARNING";
+
   return (
     <div className="flex flex-col gap-4">
       {/* Primary HUD Row */}
@@ -58,8 +65,8 @@ const ThreatMetrics = ({ systemStatus, riskScore, escalationTrend, peopleCount, 
 
           <div className="mt-4 pt-4 border-t border-foreground/5 flex items-center justify-between">
             <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wide">Threat Level</span>
-            <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded border ${isCritical ? 'bg-destructive/10 border-destructive text-destructive' : 'bg-primary/10 border-primary text-primary'}`}>
-              {isCritical ? 'CRITICAL_THREAT' : 'STABLE_ENVIRONMENT'}
+            <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded border ${isCritical ? 'bg-destructive/10 border-destructive text-destructive' : isEarlyWarning ? 'bg-yellow-500/10 border-yellow-500 text-yellow-500' : 'bg-primary/10 border-primary text-primary'}`}>
+              {isCritical ? 'CRITICAL_THREAT' : isEarlyWarning ? 'ELEVATED_RISK' : 'STABLE_ENVIRONMENT'}
             </span>
           </div>
         </div>
@@ -81,19 +88,24 @@ const ThreatMetrics = ({ systemStatus, riskScore, escalationTrend, peopleCount, 
         </div>
       </div>
 
-      {/* Weapon Status Banner */}
+      {/* Weapon / Riot / Warning Status Banner */}
       <motion.div
-        animate={weaponDetected ? { 
+        animate={isCritical ? { 
             borderColor: ["rgba(239, 68, 68, 0.2)", "rgba(239, 68, 68, 0.8)", "rgba(239, 68, 68, 0.2)"],
             backgroundColor: ["rgba(239, 68, 68, 0.05)", "rgba(239, 68, 68, 0.15)", "rgba(239, 68, 68, 0.05)"]
+        } : isEarlyWarning ? {
+            borderColor: ["rgba(234, 179, 8, 0.2)", "rgba(234, 179, 8, 0.8)", "rgba(234, 179, 8, 0.2)"],
+            backgroundColor: ["rgba(234, 179, 8, 0.05)", "rgba(234, 179, 8, 0.15)", "rgba(234, 179, 8, 0.05)"]
         } : {}}
         transition={{ duration: 1.5, repeat: Infinity }}
-        className={`p-4 rounded-xl border flex items-center justify-between ${weaponDetected ? "border-destructive text-destructive" : "border-foreground/5 bg-foreground/5 text-muted-foreground"}`}
+        className={`p-4 rounded-xl border flex items-center justify-between ${isCritical ? "border-destructive text-destructive" : isEarlyWarning ? "border-yellow-500 text-yellow-500" : "border-foreground/5 bg-foreground/5 text-muted-foreground"}`}
       >
         <div className="flex items-center gap-3">
-          {weaponDetected ? <AlertTriangle size={20} className="animate-bounce" /> : <ShieldCheck size={20} className="opacity-50" />}
+          {isCritical ? <AlertTriangle size={20} className="animate-bounce" /> 
+           : isEarlyWarning ? <AlertTriangle size={20} className="animate-pulse" />
+           : <ShieldCheck size={20} className="opacity-50" />}
           <span className="text-[11px] font-black tracking-[0.25em] uppercase">
-            {weaponDetected ? "TACTICAL ALERT: WEAPON_DETECTED" : "DEFENSE_PROTOCOL: SECURE"}
+            {alertMessage}
           </span>
         </div>
         <div className="flex items-center gap-2">

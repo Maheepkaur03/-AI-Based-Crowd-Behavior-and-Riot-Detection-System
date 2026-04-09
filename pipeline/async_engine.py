@@ -342,8 +342,8 @@ def weapon_worker():
 
             for box, score in zip(boxes, scores):
                 area = (box[2] - box[0]) * (box[3] - box[1])
-                # Relaxed area threshold from 120 to 50 for distant weapon detection
-                if score >= settings.WEAPON_CONF and area > 50:
+                # Restored area threshold to 120 to avoid tiny false positive shapes
+                if score >= settings.WEAPON_CONF and area > 120:
                     current_weapon_boxes.append((tuple(map(int, box)), score))
                     max_weapon_conf = max(max_weapon_conf, score)
 
@@ -357,7 +357,7 @@ def weapon_worker():
             # ALERT LOGIC: Trigger alert only if smoothed signal is strong
             avg_weapon_conf = np.mean(list(weapon_confidence_history)) if len(weapon_confidence_history) > 0 else 0.0
             
-            ALERT_THRESHOLD = 0.40 # Lowered floor from 0.50
+            ALERT_THRESHOLD = 0.55 # Raised threshold to reduce false weapon alerts
             new_weapon_signal = 1 if avg_weapon_conf >= ALERT_THRESHOLD else 0
             
             with weapon_signal_lock:
@@ -376,8 +376,8 @@ def weapon_worker():
 def people_worker():
     global last_people_metadata, active_tracks
     
-    # Lowered from 15 to 8 to minimize "ghost boxes" and stay snappier
-    PERSISTENCE_THRESHOLD = 8 
+    # Lowered to 2 to minimize "ghost boxes" and eliminate bounding box lag
+    PERSISTENCE_THRESHOLD = 2 
     
     while not shutdown_event.is_set():
         try:
@@ -562,12 +562,9 @@ def detection_worker():
             with weapon_signal_lock:
                 local_weapon_signal = weapon_signal
 
+        # Weapon boxes rendering removed per user request (alert is still sent)
         if len(local_weapon_boxes) > 0:
-            for b, score in local_weapon_boxes:
-                x1, y1, x2, y2 = b
-                color = (255, 0, 0) # Blue for weapons
-                cv2.rectangle(annotated, (x1, y1), (x2, y2), color, 2)
-                cv2.putText(annotated, "WEAPON", (x1, y2 + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+            pass
         
         draw_time += (time.time() - t1)
 
@@ -727,9 +724,8 @@ def behavior_worker():
             and frame_index % settings.GRU_INTERVAL == 0
         ):
             new_pred = predict_anomaly(feature_buffer)
-            # Apply a safety bias (calibration) to suppress background noise
-            # Subtracting a small bias and scaling up ensures we only care about high-confidence anomalies
-            calibrated = (new_pred - 0.2) / 0.8
+            # Apply a stricter safety bias (calibration) to suppress background noise in normal crowd flows
+            calibrated = (new_pred - 0.4) / 0.6
             calibrated = np.clip(calibrated, 0.0, 1.0)
             
             # Apply Exponential Moving Average (EMA) to prevent spikes

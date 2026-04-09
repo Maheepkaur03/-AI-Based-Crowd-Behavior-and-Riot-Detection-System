@@ -29,9 +29,8 @@ class Settings:
     # =========================
     # DETECTION CONFIDENCE
     # =========================
-    PERSON_CONF = 0.55
-    WEAPON_CONF = 0.45
-
+    PERSON_CONF = 0.60
+    WEAPON_CONF = 0.75
 
     # =========================
     # MULTI-RATE PIPELINE
@@ -80,9 +79,9 @@ class Settings:
     # =========================
     # ALERT THRESHOLDS
     # =========================
-    RIOT_THRESHOLD = 0.60
-    EARLY_WARNING_THRESHOLD = 0.50
-    ESCALATION_THRESHOLD = 0.05
+    RIOT_THRESHOLD = 0.50
+    EARLY_WARNING_THRESHOLD = 0.40
+    ESCALATION_THRESHOLD = 0.04
 
 
     # =========================

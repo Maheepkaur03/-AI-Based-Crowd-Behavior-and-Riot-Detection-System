@@ -6,7 +6,7 @@ import VideoFeed from '@/components/VideoFeed'
 import ThreatMetrics from '@/components/ThreatMetrics'
 import AlertLog from '@/components/AlertLog'
 import RiskTimeline from '@/components/RiskTimeline'
-import SpatialRadar from '@/components/SpatialRadar'
+import SystemInfoWidget from '@/components/SystemInfoWidget'
 import type { Alert } from '@/components/AlertLog'
 
 import { fetchSystemStatus, fetchAlerts, fetchRiskHistory, SystemStatus, AlertData } from '@/lib/api'
@@ -18,8 +18,7 @@ export default function Dashboard() {
     weapon_detected: false,
     gru_score: 0.0,
     risk_score: 0.0,
-    risk_trend: 0.0,
-    locations: [],
+    risk_trend: 0.0
   })
 
   const [isBackendConnected, setIsBackendConnected] = useState(false)
@@ -88,11 +87,11 @@ export default function Dashboard() {
         <header className="flex flex-col items-center justify-center text-center py-4 border-b border-foreground/5 mb-2 relative">
            <div className="absolute top-0 left-0 w-32 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
            <div className="absolute bottom-0 right-0 w-32 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
-          <h1 className="text-2xl md:text-4xl font-black tracking-tighter uppercase mb-2 bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/70">
-            SIGHTLINE COMMAND CONSOLE
+          <h1 className="text-2xl md:text-5xl font-black tracking-widest uppercase mb-2 text-white drop-shadow-lg">
+            AI CROWD MONITORING SYSTEM
           </h1>
-          <p className="text-[10px] md:text-xs text-muted-foreground uppercase tracking-[0.4em] font-bold opacity-60">
-            Cognitive Surveillance & Threat Intelligence
+          <p className="text-[10px] md:text-xs text-primary uppercase tracking-[0.4em] font-bold">
+            Real-Time Threat Intelligence
           </p>
         </header>
 
@@ -113,8 +112,7 @@ export default function Dashboard() {
               gruScore={status.gru_score}
               weaponDetected={status.weapon_detected}
             />
-            
-            <SpatialRadar locations={status.locations || []} />
+            <SystemInfoWidget />
           </aside>
         </div>
 
@@ -129,10 +127,10 @@ export default function Dashboard() {
         </footer>
 
         {/* Footer Metadata */}
-        <div className="flex justify-between items-center text-[9px] uppercase tracking-widest text-muted-foreground/30 font-black pt-8 border-t border-foreground/5">
-            <span>SIGHTLINE_OS_V2.1</span>
-            <span>ENCRYPTED_LINK_ESTABLISHED</span>
-            <span>© 2026 COGNITIVE_SECURITY_SYSTEMS</span>
+        <div className="flex justify-between items-center text-[9px] uppercase tracking-widest text-muted-foreground/50 font-black pt-8 border-t border-foreground/5">
+            <span>AI_CROWD_MONITORING_SYSTEM_V2.1</span>
+            <span>SECURE_CONNECTION_ACTIVE</span>
+            <span>© 2026 AI CROWD MONITORING</span>
         </div>
       </motion.div>
     </div>
